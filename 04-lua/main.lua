@@ -2,16 +2,13 @@
 local function parse_json(str)
     local pos = 1
 
-    -- Предварительное объявление всех функций
-    local parse_value, parse_object, parse_array, parse_string, parse_number
-
     local function skip_whitespace()
         while str:sub(pos, pos):match("%s") do
             pos = pos + 1
         end
     end
 
-    function parse_string()
+    local function parse_string()
         pos = pos + 1 -- Пропускаем начальную кавычку
         local start_pos = pos
         while str:sub(pos, pos) ~= '"' do
@@ -34,38 +31,12 @@ local function parse_json(str)
         })
     end
 
-    function parse_number()
+    local function parse_number()
         local start_pos = pos
         while str:sub(pos, pos):match("[%d%.%-eE+]") do
             pos = pos + 1
         end
         return tonumber(str:sub(start_pos, pos - 1))
-    end
-
-    function parse_value()
-        skip_whitespace()
-        local char = str:sub(pos, pos)
-
-        if char == "{" then
-            return parse_object()
-        elseif char == "[" then
-            return parse_array()
-        elseif char == '"' then
-            return parse_string()
-        elseif char:match("[%d%-]") then
-            return parse_number()
-        elseif str:sub(pos, pos + 3) == "true" then
-            pos = pos + 4
-            return true
-        elseif str:sub(pos, pos + 4) == "false" then
-            pos = pos + 5
-            return false
-        elseif str:sub(pos, pos + 3) == "null" then
-            pos = pos + 4
-            return nil
-        else
-            error("Invalid JSON value at position " .. pos)
-        end
     end
 
     function parse_object()
@@ -120,6 +91,32 @@ local function parse_json(str)
             pos = pos + 1 -- Пропускаем ','
         end
         return arr
+    end
+
+    function parse_value()
+        skip_whitespace()
+        local char = str:sub(pos, pos)
+
+        if char == "{" then
+            return parse_object()
+        elseif char == "[" then
+            return parse_array()
+        elseif char == '"' then
+            return parse_string()
+        elseif char:match("[%d%-]") then
+            return parse_number()
+        elseif str:sub(pos, pos + 3) == "true" then
+            pos = pos + 4
+            return true
+        elseif str:sub(pos, pos + 4) == "false" then
+            pos = pos + 5
+            return false
+        elseif str:sub(pos, pos + 3) == "null" then
+            pos = pos + 4
+            return nil
+        else
+            error("Invalid JSON value at position " .. pos)
+        end
     end
 
     return parse_value()

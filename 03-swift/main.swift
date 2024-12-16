@@ -61,15 +61,12 @@ func filterLines(matching regexPattern: String, from inputFile: String, to outpu
         var buffer = [UInt8](repeating: 0, count: 1024)
         var partialLine = ""
 
-        var i = 0
         while let line = getLine(from: inputStream, buffer: &buffer, partialLine: &partialLine) {
             let range = NSRange(location: 0, length: line.utf8.count)
-            print("Line #\(i): \(line)");
             if regex.firstMatch(in: line, options: [], range: range) != nil {
                 let lineData = (line + "\n").data(using: .utf8)!
                 _ = lineData.withUnsafeBytes { outputStream.write($0.bindMemory(to: UInt8.self).baseAddress!, maxLength: lineData.count) }
             }
-            i += 1
         }
 
         print("Filtration is complete. The results are written to \(outputFile)")
