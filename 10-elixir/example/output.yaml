@@ -1,0 +1,17 @@
+- - arr:
+      - "\\\r\b\n\t"
+      - "null"
+    obj:
+      key1: "true"
+      key2: 123123546456231231243412321335
+      key3:
+        i: am
+        obj: 42
+  - {}
+- - true
+  - false
+  - null
+  - 123.0123
+  - string
+- []
+- ""
